@@ -45,14 +45,14 @@
                             </div>
                         </div>
                         <div class="card-footer text-end">
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
                             <button type="reset" class="btn btn-secondary">Reset</button>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="history.back()">Close</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="history.back()">Close</button>
             </div>
         </div>
     </div>
@@ -111,7 +111,7 @@
 
         submitForm(event) {
             event.preventDefault();
-            showConfirmAlert("Are you sure to add new Party?", function () {
+            showConfirmAlert("Are you sure to update the Party?", function () {
                 var formData = $(this.form).serialize();
                 $.ajax({
                     url: '@Url.Action("EditParty", "PokemonParty")',
