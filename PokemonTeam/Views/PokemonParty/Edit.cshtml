@@ -51,9 +51,6 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="history.back()">Close</button>
-            </div>
         </div>
     </div>
 </div>
@@ -90,7 +87,7 @@
             const selectedText = this.pokemonDropdown.options[this.pokemonDropdown.selectedIndex].text;
 
             if (this.selectedPokemons.some(pokemon => pokemon.id === selectedValue)) {
-                alert('This Pokémon is already in the list.');
+                showInfoAlert('This Pokémon is already in the list.');
                 return;
             }
 

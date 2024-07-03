@@ -47,6 +47,8 @@
                         <th>Pokemon Name</th>
                         <th>Pokemon Type</th>
                         <th>Pokemon Lvl</th>
+                        <th>Pokemon DMG</th>
+                        <th>Pokemon HP</th>
                         <th>Date Created</th>
                         <th>Action</th>
                     </tr>
@@ -61,6 +63,8 @@
                                 <td>@partyDetailsList[0].Pokemon.Name</td>
                                 <td>@partyDetailsList[0].Pokemon.Type</td>
                                 <td>@partyDetailsList[0].Pokemon.Lvl</td>
+                                <td>@partyDetailsList[0].Pokemon.AttackDmg</td>
+                                <td>@partyDetailsList[0].Pokemon.Hp</td>
                                 <td rowspan="@partyDetailsList.Count + 1">@item.DateCreated</td>
                                 <td>
                                     <form action="@Url.Action("Edit", "PokemonParty")" method="post" style="display:inline">
@@ -78,6 +82,8 @@
                                     <td>@partyDetailsList[i].Pokemon.Name</td>
                                     <td>@partyDetailsList[i].Pokemon.Type</td>
                                     <td>@partyDetailsList[i].Pokemon.Lvl</td>
+                                    <td>@partyDetailsList[i].Pokemon.AttackDmg</td>
+                                    <td>@partyDetailsList[i].Pokemon.Hp</td>
                                 </tr>
                             }
                         }
