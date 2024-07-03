@@ -107,7 +107,7 @@ namespace PokemonTeam.Controllers {
                 var item = myEntity.PokemonInfos.ToList();
                 return item.Select(c => new SelectListItem {
                     Value = c.PokemonId.ToString(),
-                    Text = c.Name
+                    Text = $"{c.Name} - {c.Type}"
                 });
             }
         }
