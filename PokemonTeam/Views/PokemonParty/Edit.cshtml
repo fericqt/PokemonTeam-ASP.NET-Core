@@ -1,0 +1,187 @@
+﻿@{
+
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/PokemonParty/_Layout.cshtml";
+    var partyInfo = ViewData["PartyInfo"] as PokemonTeam.Models.PokemonDBModel.Party;
+    var pokemonList = ViewData["PokemonList"] as IEnumerable<SelectListItem>; 
+    var selectedPokemonDetails = partyInfo.PartyDetails.Select(p => new {
+        id = p.PokemonId,
+        name = pokemonList.FirstOrDefault(pl => pl.Value == p.PokemonId.ToString())?.Text
+    });
+}
+
+
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Info</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="history.back()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="myForm" method="post">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="Name" class="form-label">PartyName:</label>
+                                <input type="text" class="form-control" value="@partyInfo.Name" id="Name" name="Name" required />
+                                <input type="hidden" value="@partyInfo.PartyId" id="PartyId" name="PartyId"/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="PokemonID" class="form-label">Select Pokemon:</label>
+                                <select class="form-select" id="pokemonIdDropdown" required>
+                                    @foreach (var item in pokemonList) {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <button type="button" class="btn btn-secondary mt-2" id="addPokemon">Add</button>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Selected Pokemon Members:</label>
+                                <ul id="selectedPokemons" class="list-group">
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="history.back()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var initialPokemonList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(selectedPokemonDetails));
+</script>
+<script>
+    $(document).ready(function () {
+        $('#messageModal').modal('show');
+    });
+</script>
+<script>
+    class PokemonPartyForm {
+        constructor() {
+            this.form = document.getElementById('myForm');
+            this.pokemonDropdown = document.getElementById('pokemonIdDropdown');
+            this.selectedPokemonsList = document.getElementById('selectedPokemons');
+            this.addPokemonButton = document.getElementById('addPokemon');
+            this.selectedPokemons = [];
+
+            initialPokemonList.forEach(pokemon => {
+                this.selectedPokemons.push(pokemon);
+            });
+
+            this.updatePokemonListUI();
+
+            this.addPokemonButton.addEventListener('click', this.addPokemon.bind(this));
+            this.form.addEventListener('reset', this.resetForm.bind(this));
+            this.form.addEventListener('submit', this.submitForm.bind(this));
+        }
+
+        addPokemon() {
+            const selectedValue = this.pokemonDropdown.value;
+            const selectedText = this.pokemonDropdown.options[this.pokemonDropdown.selectedIndex].text;
+
+            if (this.selectedPokemons.some(pokemon => pokemon.id === selectedValue)) {
+                alert('This Pokémon is already in the list.');
+                return;
+            }
+
+            this.selectedPokemons.push({ id: selectedValue, name: selectedText });
+
+            this.updatePokemonListUI();
+        }
+
+        removePokemonFromList(listItem, id) {
+            this.selectedPokemons = this.selectedPokemons.filter(pokemon => pokemon.id !== id);
+            this.updatePokemonListUI();
+        }
+
+        resetForm() {
+            this.selectedPokemons = [];
+            this.updatePokemonListUI();
+        }
+
+        submitForm(event) {
+            event.preventDefault();
+            showConfirmAlert("Are you sure to add new Party?", function () {
+                var formData = $(this.form).serialize();
+                $.ajax({
+                    url: '@Url.Action("EditParty", "PokemonParty")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (result) {
+                        if (result.success) {
+                            showInfoAlert(result.message);
+                            window.location.href = '@Url.Action("Index","Home")';
+                        } else {
+                            showInfoAlert(result.message);
+                        }
+                    }.bind(this),
+                    error: function (xhr, status, error) {
+                        showInfoAlert("An error occurred: " + error);
+                    }
+                });
+            }.bind(this));
+        }
+
+        updatePokemonListUI() {
+            this.selectedPokemonsList.innerHTML = '';
+            this.selectedPokemons.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.textContent = item.name;
+
+                const inputItem = document.createElement('input');
+                inputItem.name = 'itemID';
+                inputItem.value = item.id;
+                inputItem.type = 'hidden';
+
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'btn btn-danger btn-sm';
+                removeButton.textContent = 'Remove';
+                removeButton.addEventListener('click', () => {
+                    this.removePokemonFromList(listItem, item.id);
+                });
+
+                listItem.appendChild(inputItem);
+                listItem.appendChild(removeButton);
+                this.selectedPokemonsList.appendChild(listItem);
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        new PokemonPartyForm();
+    });
+    function showConfirmAlert(message, callback) {
+        swal({
+            title: message,
+            text: "",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((isOkay) => {
+            if (isOkay) {
+                callback();
+            }
+        });
+        return false;
+    }
+    function showInfoAlert(message) {
+        swal({
+            title: message,
+            icon: "info",
+            button: "OK",
+        });
+    }
+</script>
+

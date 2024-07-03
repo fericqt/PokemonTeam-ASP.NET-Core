@@ -1,0 +1,114 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Home/_Layout.cshtml";
+}
+
+@model List<PokemonTeam.Models.PokemonDBModel.Party>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">List</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <button class="btn btn-outline-success" type="button" onclick="history.back()">Go Back</button>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "PokemonInfo")">
+                            Pokemon Info
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "PokemonParty")">
+                            Pokemon Party
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h2 class="text-center mb-4">My Party List</h2>
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Party Name</th>
+                        <th>Classification</th>
+                        <th>Pokemon Name</th>
+                        <th>Pokemon Type</th>
+                        <th>Pokemon Lvl</th>
+                        <th>Date Created</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model) {
+                        var partyDetailsList = item.PartyDetails.ToList();
+                        if (partyDetailsList.Any()) {
+                            <tr>
+                                <td rowspan="@partyDetailsList.Count + 1">@item.Name</td>
+                                <td rowspan="@partyDetailsList.Count + 1">@item.Classification</td>
+                                <td>@partyDetailsList[0].Pokemon.Name</td>
+                                <td>@partyDetailsList[0].Pokemon.Type</td>
+                                <td>@partyDetailsList[0].Pokemon.Lvl</td>
+                                <td rowspan="@partyDetailsList.Count + 1">@item.DateCreated</td>
+                                <td>
+                                    <form action="@Url.Action("Edit", "PokemonParty")" method="post" style="display:inline">
+                                        <input type="hidden" name="Id" value="@item.PartyId" />
+                                        <button type="submit" class="btn btn-primary btn-sm">Edit</button>
+                                    </form>
+                                    <form action="@Url.Action("DeleteParty", "PokemonParty")" method="post" onsubmit="return deleteData(this)" style="display:inline">
+                                        <input type="hidden" name="Id" value="@item.PartyId" />
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            for (int i = 1; i < partyDetailsList.Count; i++) {
+                                <tr>
+                                    <td>@partyDetailsList[i].Pokemon.Name</td>
+                                    <td>@partyDetailsList[i].Pokemon.Type</td>
+                                    <td>@partyDetailsList[i].Pokemon.Lvl</td>
+                                </tr>
+                            }
+                        }
+                        else {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Classification</td>
+                                <td></td>
+                                <td></td>
+                                <td>@item.DateCreated</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </main>
+    </div>
+</div>
+<script>
+    function deleteData(form) {
+        swal({
+            title: "Are you sure to delete this data?",
+            text: "",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((isOkay) => {
+            if (isOkay) {
+                form.submit();
+            }
+        });
+        return false;
+    }
+</script>
