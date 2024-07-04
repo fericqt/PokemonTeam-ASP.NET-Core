@@ -84,7 +84,7 @@
             const selectedValue = this.pokemonDropdown.value;
             const selectedText = this.pokemonDropdown.options[this.pokemonDropdown.selectedIndex].text;
 
-            if (this.selectedPokemons.some(pokemon => pokemon.id === selectedValue)) {
+            if (this.selectedPokemons.find(pokemon => pokemon.id == selectedValue)) {
                 showInfoAlert('This Pokémon is already in the list.');
                 return;
             }
