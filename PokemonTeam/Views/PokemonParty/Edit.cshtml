@@ -11,11 +11,11 @@
 }
 
 
-<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="UpdateModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="messageModalLabel">Info</h5>
+                <h5 class="modal-title">Manage Party</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="history.back()">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -55,14 +55,12 @@
     </div>
 </div>
 <script>
-    var initialPokemonList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(selectedPokemonDetails));
-</script>
-<script>
     $(document).ready(function () {
-        $('#messageModal').modal('show');
+        $("#updateModal").modal('show');
     });
-</script>
-<script>
+    //
+    var initialPokemonList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(selectedPokemonDetails));
+    //
     class PokemonPartyForm {
         constructor() {
             this.form = document.getElementById('myForm');
