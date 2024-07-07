@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Account";
+    Layout = "~/Views/Login/_Layout.cshtml";
+}
+<div id="popUpText" style="display:none; color:white;position:fixed; top:20px; right:20px; padding:5px 100px; border-radius: 2px; z-index: 1050; border: 1px solid green; background-color:darkolivegreen">
+</div>
+<main class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card col-md-6 mx-auto">
+        <div class="card-body p-5">
+            <form id="myForm" method="post">
+                <h3 class="text-center mb-4">Login</h3>
+                <div class="form-group mb-3">
+                    <input type="email" name="Email" class="form-control" id="email" placeholder="Enter your email" />
+                </div>
+                <div class="form-group mb-3">
+                    <input type="password" name="Password" class="form-control" id="password" placeholder="Enter your password" />
+                </div>
+
+                <div class="form-group form-check mb-3 d-flex justify-content-between">
+                    <div>
+                        <input type="checkbox" class="form-check-input" id="rememberMe" checked />
+                        <label class="form-check-label" for="rememberMe">Remember me?</label>
+                    </div>
+                    <div>
+                        <a href="sample" class="link-primary">Forgot Password?</a>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-outline-primary btn-block">Sign in</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <p>Don't have an account? <a href="@Url.Action("Index", "Register")">Create Account</a></p>
+                <p>or sign up with:</p>
+                <button type="button" class="btn btn-link mx-1">
+                    <i class="facebook"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    class LoginForm {
+        constructor() {
+            this.form = $('#myForm');
+            this.form.on('submit', this.submitBtn.bind(this));
+        }
+        submitBtn(event) {
+            event.preventDefault();
+            var formData = $(this.form).serialize();
+            $.ajax({
+                url: '@Url.Action("CheckCredentials", "Login")',
+                type: 'POST',
+                data: formData,
+                success: function (result) {
+                    if (!result.success) {
+                        $('#popUpText').text(result.message);
+                        $('#popUpText').fadeIn('slow').delay(5000).fadeOut('slow');
+                    } else {
+                        window.location.href = '@Url.Action("Index", "Home")'
+                    }
+                }.bind(this),
+                error: function (xhr, status, error) {
+                    alert("An error occurred: " + error);
+                }
+               
+            })
+
+        }
+    }
+    $(document).ready(function () {
+        new LoginForm();
+    });
+
+
+
+</script>
